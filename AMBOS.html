@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Media Player Pro</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      /* background-color: rgba(0, 0, 0, 0.6); */
+      padding: 10px 0;
+    }
+
+    .tab-button {
+      /* background-color: #0077ff; */
+      background-color: #FFA500; /* Color naranja */
+      /* color: white; */
+      color: black; /* Cambié el color del texto a negro */
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .tab-button:hover {
+      /* background-color: #0055aa; */
+      background-color: #000000; /* Fondo negro */
+      color: white; /* Texto blanco */
+    }
+
+    .file-label {
+  background-color: #FFA500; /* Naranja */
+  color: black; /* Texto negro */
+  padding: 6px 14px;
+  margin: 0 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  display: inline-block;
+  transition: background 0.3s, color 0.3s;
+}
+
+.file-label:hover {
+  background-color: #000000; /* Negro */
+  color: white; /* Texto blanco */
+}
+
+.file-input {
+  display: none; /* Oculta el input original */
+}
+
+
+
+
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .player-container {
+  max-width: 600px;
+  margin: 20px auto;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px #0077ffaa;
+  overflow: hidden; /* Asegura que todo el contenido que sobresalga sea ocultado */
+}
+
+.marquee {
+  width: 100%;
+  overflow: hidden;  /* Asegura que el texto no se desborde */
+  white-space: nowrap;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 0 0 10px #00aaff;
+  animation: marquee 10s linear infinite;
+  margin-bottom: 20px;
+}
+
+
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .file-input {
+      margin-bottom: 15px;
+    }
+
+    ul.playlist {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #00aaff44;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    ul.playlist li {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #00aaff22;
+    }
+
+    ul.playlist li:hover,
+    ul.playlist li.active {
+      background: #00aaff33;
+      color: #00ffff;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .controls button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #0057e7;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      background-color: #003ea8;
+    }
+
+    .volume-control {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .volume-control input {
+      width: 80%;
+    }
+
+    audio, video {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Título visible arriba de las pestañas -->
+  <div style="text-align:center; color:white; margin-top:20px; font-family: 'Segoe UI', sans-serif;">
+    <h1 style="margin: 0;">
+      Producciones SALVAJE
+      <span style="font-size: 0.9rem;"> &copy;</span>
+    </h1>
+  </div>
+
+  <div class="tabs">
+      <div class="tab-group">
+        <button class="tab-button" onclick="showTab('mp3Tab')">🎵 Reproducir MP3</button>
+        <!-- Eliminada la etiqueta de "Elegir archivos" que estaba mal ubicada -->
+      </div>
+      <button class="tab-button" onclick="showTab('videoTab')">🎬 Reproducir Video</button>
+  </div>
+
+
+  <!-- PESTAÑA MP3 -->
+  <div id="mp3Tab" class="tab-content active">
+      <div class="player-container">
+        <div class="marquee" id="mp3TitleMarquee">
+       🎧 Reproductor MP3 Profesional 🎧
+      </div>
+
+
+
+      <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px;">
+       <label class="file-label">
+         🎵 Elegir archivos
+         <input class="file-input" type="file" id="mp3Files" multiple accept="audio/*">
+       </label>
+         <input type="text" id="searchMP3" placeholder="Buscar canción o artista..." style="flex: 1; padding: 8px; border-radius: 6px; border: none;">
+      </div>
+
+
+      <ul id="mp3List" class="playlist"></ul>
+
+      <div class="controls">
+        <button onclick="playMP3()">▶️ Play</button>
+        <button onclick="pauseMP3()">⏸️ Pause</button>
+        <button onclick="stopMP3()">⏹️ Stop</button>
+        <button onclick="prevMP3()">⏮️ Preview</button>
+        <button onclick="nextMP3()">⏭️ Next</button>
+        <button onclick="toggleRepeat()">🔁 Repeat</button>
+      </div>
+
+      <div class="volume-control">
+        <label>Volumen:</label>
+        <input type="range" min="0" max="1" step="0.01" value="0.8" id="mp3Volume">
+      </div>
+
+      <audio id="mp3Player" controls></audio>
+    </div>
+  </div>
+
+  <!-- PESTAÑA VIDEO -->
+  <div id="videoTab" class="tab-content">
+    <div class="player-container">
+      <div class="marquee">🎬 Reproductor de Video Profesional 🎬</div>
+      <label for="videoFiles" class="file-label">📂 Seleccionar Archivo</label>
+      <input class="file-input" type="file" id="videoFiles" multiple accept="video/*" style="display:none;">
+
+      <ul id="videoList" class="playlist"></ul>
+
+      <div class="controls">
+        <button onclick="playVideo()">▶️ Play</button>
+        <button onclick="pauseVideo()">⏸️ Pause</button>
+        <button onclick="stopVideo()">⏹️ Stop</button>
+      </div>
+
+      <div class="volume-control">
+        <label>Volumen:</label>
+        <input type="range" min="0" max="1" step="0.01" value="0.8" id="videoVolume">
+      </div>
+
+      <video id="videoPlayer" controls></video>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // === MP3 ===
+    const mp3Input = document.getElementById('mp3Files');
+    const mp3List = document.getElementById('mp3List');
+    const mp3Player = document.getElementById('mp3Player');
+    const mp3Volume = document.getElementById('mp3Volume');
+    let mp3Tracks = [];
+    let currentMP3 = 0;
+    let repeatMP3 = false;
+
+    mp3Input.addEventListener('change', () => {
+  mp3Tracks = Array.from(mp3Input.files);
+  renderMP3List(mp3Tracks);
+});
+
+// Nuevo: renderiza la lista filtrada
+function renderMP3List(tracks) {
+  mp3List.innerHTML = '';
+  tracks.forEach((file, i) => {
+    const li = document.createElement('li');
+    li.textContent = file.name;
+    li.ondblclick = () => {
+      currentMP3 = mp3Tracks.indexOf(file); // índice en la lista completa
+      loadAndPlayMP3();
+    };
+    mp3List.appendChild(li);
+  });
+}
+
+const searchInput = document.getElementById('searchMP3');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  const filtered = mp3Tracks.filter(file => file.name.toLowerCase().includes(query));
+  renderMP3List(filtered);
+});
+
+
+
+
+    function loadAndPlayMP3() {
+      const file = mp3Tracks[currentMP3];
+      if (!file) return;
+
+      mp3Player.src = URL.createObjectURL(file);
+      mp3Player.play();
+      highlightMP3();
+
+      // Actualiza la marquesina con el nombre de la canción
+      const marquee = document.getElementById('mp3TitleMarquee');
+      marquee.textContent = `🎧 Reproductor MP3 Profesional 🎧 - ${file.name}`;
+    }
+
+
+    function highlightMP3() {
+      Array.from(mp3List.children).forEach((li, i) => {
+        li.classList.toggle('active', i === currentMP3);
+      });
+    }
+
+    function playMP3() {
+      if (!mp3Player.src) loadAndPlayMP3();
+      else mp3Player.play();
+    }
+
+    function pauseMP3() {
+      mp3Player.pause();
+    }
+
+    function stopMP3() {
+      mp3Player.pause();
+      mp3Player.currentTime = 0;
+    }
+
+    function nextMP3() {
+      currentMP3 = (currentMP3 + 1) % mp3Tracks.length;
+      loadAndPlayMP3();
+    }
+
+    function prevMP3() {
+      currentMP3 = (currentMP3 - 1 + mp3Tracks.length) % mp3Tracks.length;
+      loadAndPlayMP3();
+    }
+
+    function toggleRepeat() {
+      repeatMP3 = !repeatMP3;
+    }
+
+    mp3Player.addEventListener('ended', () => {
+      if (repeatMP3) loadAndPlayMP3();
+      else nextMP3();
+    });
+
+    mp3Volume.addEventListener('input', () => {
+      mp3Player.volume = mp3Volume.value;
+    });
+
+    // === VIDEO ===
+    const videoInput = document.getElementById('videoFiles');
+    const videoList = document.getElementById('videoList');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const videoVolume = document.getElementById('videoVolume');
+    let videoTracks = [];
+    let currentVideo = 0;
+
+    videoInput.addEventListener('change', () => {
+      videoTracks = Array.from(videoInput.files);
+      videoList.innerHTML = '';
+      videoTracks.forEach((file, i) => {
+        const li = document.createElement('li');
+        li.textContent = file.name;
+        li.onclick = () => {
+          currentVideo = i;
+          loadAndPlayVideo();
+        };
+        videoList.appendChild(li);
+      });
+    });
+
+    function loadAndPlayVideo() {
+      const file = videoTracks[currentVideo];
+      if (!file) return;
+      videoPlayer.src = URL.createObjectURL(file);
+      videoPlayer.play();
+    }
+
+    function playVideo() {
+      videoPlayer.play();
+    }
+
+    function pauseVideo() {
+      videoPlayer.pause();
+    }
+
+    function stopVideo() {
+      videoPlayer.pause();
+      videoPlayer.currentTime = 0;
+    }
+
+    videoVolume.addEventListener('input', () => {
+      videoPlayer.volume = videoVolume.value;
+    });
+  </script>
+</body>
+</html>
